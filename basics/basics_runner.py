@@ -46,7 +46,7 @@ def insert_single_rows(insert_limit=1000000):
     data = get_file_data(insert_limit)
 
     # Create new instance of NeoWrapper and clean database
-    neo_wrapper = Neo4jWrapper('neo4j', 'Admin1234!')
+    neo_wrapper = Neo4jWrapper('neo4j', 'neo4j')
     neo_wrapper.delete_all_nodes()
     last_timestamp = get_update_last_timestamp(last_timestamp, "All nodes deleted")
 
