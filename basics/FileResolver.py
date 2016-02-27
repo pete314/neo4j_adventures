@@ -72,10 +72,10 @@ class FileResolver(object):
             cnt = 0
             tmp_values = []
             for _, site in csv.reader(zf.open(csv_filename)):
+                cnt += 1
                 uri_bits = site.split('.')
                 tmp_values.append({'url': ('http://' + site), 'brand': uri_bits[0], 'tld': uri_bits[1], 'website': site})
 
-                cnt += 1
                 if limit == cnt:
                     return tmp_values
 

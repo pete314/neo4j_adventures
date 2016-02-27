@@ -14,6 +14,9 @@ from FileResolver import FileResolver
 from Neo4jWrapper import Neo4jWrapper
 
 start_time = time.time()
+NEO4j_USERNAME = "neo4j"
+NEO4j_PASSWORD = "Neo4jj"
+
 
 def get_update_last_timestamp(last_timestamp, message=""):
     print("Time elapsed: %s seconds\n%s\n=========="
@@ -46,7 +49,7 @@ def insert_single_rows(insert_limit=1000000):
     data = get_file_data(insert_limit)
 
     # Create new instance of NeoWrapper and clean database
-    neo_wrapper = Neo4jWrapper('neo4j', 'neo4j')
+    neo_wrapper = Neo4jWrapper(NEO4j_USERNAME, NEO4j_PASSWORD)
     neo_wrapper.delete_all_nodes()
     last_timestamp = get_update_last_timestamp(last_timestamp, "All nodes deleted")
 
@@ -61,24 +64,25 @@ def insert_single_rows(insert_limit=1000000):
                         + "\nTotal memory used: " + (str)((finishing_memory_profile.used - starting_memory_profile.used)/1024)+"KB")
 
 
-def insert_with_trasactions(insert_limit=1000000):
+def insert_with_transactions(insert_limit=1000000, execution_type="transaction"):
     """
-    Insert into db with transactions
+    Insert into db with transactions or batch jobs
 
     :param insert_limit: The number of nodes to insert
+    :param execution_type: transaction | batch
     :return:
     """
     last_timestamp = time.time()
     data = get_file_data(insert_limit)
 
     # Create new instance of NeoWrapper and clean database
-    neo_wrapper = Neo4jWrapper('neo4j', 'Admin1234!')
+    neo_wrapper = Neo4jWrapper(NEO4j_USERNAME, NEO4j_PASSWORD)
     neo_wrapper.delete_all_nodes()
     last_timestamp = get_update_last_timestamp(last_timestamp, "All nodes deleted")
 
     # Insert the data into Neo4j
     starting_memory_profile = psutil.virtual_memory()
-    neo_wrapper.insert_single_with_loop(data, 'transaction', 500)
+    neo_wrapper.insert_single_with_loop(data, execution_type, 500)
     finishing_memory_profile = psutil.virtual_memory()
     last_timestamp = get_update_last_timestamp(last_timestamp,
                         "All nodes inserted"
@@ -93,6 +97,7 @@ def get_file_from_data_dir(filename="top-1m.csv.zip"):
 
 if __name__ == '__main__':
     # delete_current_nodes()
-    #insert_single_rows(100)
-    insert_with_trasactions(5000)
+    # insert_single_rows(100)
+    # insert_with_transactions(5000, 'transaction')
+    insert_with_transactions(5000, 'batch')
     # print ("%d items inserted in %s seconds" % (node_cnt, time.time() - start_time))
